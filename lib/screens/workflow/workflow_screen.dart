@@ -222,7 +222,7 @@ class _WorkflowScreenState extends State<WorkflowScreen> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15))),
                           child: Center(
-                            child: const Text('Asset Maintainance Records',
+                            child: const Text('Asset Maintainance',
                                 style: TextStyle(
                                   fontSize: 20.0,
                                   fontFamily: 'Roboto',

@@ -1,0 +1,17 @@
+{
+    
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "ams",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "ams (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        }
+    ]
+}

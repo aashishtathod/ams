@@ -1,5 +1,5 @@
 
-import 'package:ams/screens/signin_screen.dart';
+import 'package:ams/screens/main/signin_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

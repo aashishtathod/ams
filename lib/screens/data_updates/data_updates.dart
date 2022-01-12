@@ -1,25 +1,25 @@
-// ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace
+// ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace, unused_local_variable
 
 import 'package:ams/res/custom_colors.dart';
-import 'package:ams/screens/audit/audit_screen.dart';
-import 'package:ams/screens/workflow/workflow_screen.dart';
+import 'package:ams/screens/data_updates/physical_condition/physical_condition_screen.dart';
 import 'package:flutter/material.dart';
 
-class MainScreen extends StatefulWidget {
-  MainScreen({Key? key}) : super(key: key);
+class DataUpdatesScreen extends StatefulWidget {
+  DataUpdatesScreen({Key? key}) : super(key: key);
 
   @override
-  _MainScreenState createState() => _MainScreenState();
+  DataUpdatesScreenState createState() => DataUpdatesScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class DataUpdatesScreenState extends State<DataUpdatesScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "AMS",
+          "Data Updates",
         ),
         leading: BackButton(),
         backgroundColor: kPrimaryColor,
@@ -29,7 +29,7 @@ class _MainScreenState extends State<MainScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           InkWell(
-            onTap: () {
+            /* onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -38,7 +38,7 @@ class _MainScreenState extends State<MainScreen> {
                   },
                 ),
               );
-            },
+            },*/
             child: Center(
               child: Container(
                 height: size.height * 0.1,
@@ -55,7 +55,7 @@ class _MainScreenState extends State<MainScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15))),
                       child: Center(
-                        child: const Text('Audit',
+                        child: const Text('Utilization Level Change',
                             style: TextStyle(
                               fontSize: 20.0,
                               fontFamily: 'Roboto',
@@ -70,12 +70,12 @@ class _MainScreenState extends State<MainScreen> {
             height: size.height * 0.02,
           ),
           InkWell(
-             onTap: () {
+            onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) {
-                    return WorkflowScreen();
+                    return PhysicalConditionScreen();
                   },
                 ),
               );
@@ -96,7 +96,7 @@ class _MainScreenState extends State<MainScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15))),
                       child: Center(
-                        child: const Text('Workflow',
+                        child: const Text('Physical Condition Change',
                             style: TextStyle(
                               fontSize: 20.0,
                               fontFamily: 'Roboto',
@@ -111,6 +111,16 @@ class _MainScreenState extends State<MainScreen> {
             height: size.height * 0.02,
           ),
           InkWell(
+            /* onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return AuditScreen();
+                  },
+                ),
+              );
+            },*/
             child: Center(
               child: Container(
                 height: size.height * 0.1,
@@ -127,69 +137,7 @@ class _MainScreenState extends State<MainScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15))),
                       child: Center(
-                        child: const Text('Data Updates',
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              fontFamily: 'Roboto',
-                              color: kPrimaryColor,
-                            )),
-                      )),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: size.height * 0.02,
-          ),
-          InkWell(
-            child: Center(
-              child: Container(
-                height: size.height * 0.1,
-                width: size.width * 0.85,
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  shadowColor: Colors.blueAccent,
-                  elevation: 10,
-                  // color: kPrimaryLightColor,
-                  child: ClipPath(
-                      clipper: ShapeBorderClipper(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15))),
-                      child: Center(
-                        child: const Text('Data Retrieval',
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              fontFamily: 'Roboto',
-                              color: kPrimaryColor,
-                            )),
-                      )),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: size.height * 0.02,
-          ),
-          InkWell(
-            child: Center(
-              child: Container(
-                height: size.height * 0.1,
-                width: size.width * 0.85,
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  shadowColor: Colors.blueAccent,
-                  elevation: 10,
-                  // color: kPrimaryLightColor,
-                  child: ClipPath(
-                      clipper: ShapeBorderClipper(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15))),
-                      child: Center(
-                        child: const Text('Dashboard',
+                        child: const Text('Geo Updates',
                             style: TextStyle(
                               fontSize: 20.0,
                               fontFamily: 'Roboto',

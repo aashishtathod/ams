@@ -3,7 +3,7 @@
 import 'dart:developer';
 
 import 'package:ams/res/custom_colors.dart';
-import 'package:ams/screens/workflow/transfer/transfer_screen.dart';
+import 'package:ams/screens/workflow/transfer/transfer_asset_details.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
@@ -94,7 +94,7 @@ class _TransferScanScreenState extends State<TransferScanScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
-                                      return TransferScreen();
+                                      return TransferAssetDetailsScreen();
                                     },
                                   ),
                                 );
