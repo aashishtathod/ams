@@ -7,7 +7,10 @@ import 'package:ams/screens/workflow/workflow_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
-  MainScreen({Key? key}) : super(key: key);
+  late String username, password;
+
+  MainScreen({Key? key, required this.username, required this.password})
+      : super(key: key);
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -35,7 +38,10 @@ class _MainScreenState extends State<MainScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) {
-                    return AuditScreen();
+                    return AuditScreen(
+                      username: widget.username,
+                      password: widget.password,
+                    );
                   },
                 ),
               );

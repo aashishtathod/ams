@@ -5,7 +5,8 @@ import 'package:ams/screens/audit/audit_scan_screen.dart';
 import 'package:flutter/material.dart';
 
 class AuditAssetScreen extends StatefulWidget {
-  AuditAssetScreen({Key? key}) : super(key: key);
+  late int auditId;
+  AuditAssetScreen({Key? key, required this.auditId}) : super(key: key);
 
   @override
   _AuditAssetScreenState createState() => _AuditAssetScreenState();
