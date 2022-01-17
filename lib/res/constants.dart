@@ -1,8 +1,7 @@
 const String url =
-    "http://b0b9-2409-4053-116-5dc9-483a-f082-ef44-f71a.ngrok.io";
+    "http://a0a8-2409-4053-218e-defd-1547-7fe4-bfa8-e95c.ngrok.io";
 const String apiUrl = "$url/api";
 const String validateUser = "$apiUrl/UserAccount";
 const String auditList = "$apiUrl/auditlist";
-
-const String validateUser1 =
-    "http://b0b9-2409-4053-116-5dc9-483a-f082-ef44-f71a.ngrok.io/api/UserAccount";
+const String auditAssetList = "$apiUrl/auditassetlist";
+const String updateScannedAuditAsset = "$apiUrl/updateauditscanasset";

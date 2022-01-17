@@ -48,13 +48,13 @@ class _AuditScreenState extends State<AuditScreen> {
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
 
-        var audits;
+        /*  var audits;
         for (var value in json) {
           audits = Audit.fromJson(value);
           print(value);
         }
-
-        //var audits = Audit.fromJson(json);
+*/
+        var audits = Audit.fromJson(json);
 
         if (audits.responseStatus == "Success") {
           return audits.data;
@@ -213,6 +213,12 @@ class _AuditScreenState extends State<AuditScreen> {
                                                                           .data![
                                                                               index]
                                                                           .auditId,
+                                                                      username:
+                                                                          widget
+                                                                              .username,
+                                                                      password:
+                                                                          widget
+                                                                              .password,
                                                                     );
                                                                   },
                                                                 ),
