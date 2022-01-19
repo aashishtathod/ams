@@ -1,14 +1,21 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace
 
+import 'dart:convert';
 import 'dart:developer';
 
+import 'package:ams/models/asset_details_model.dart';
+import 'package:ams/res/constants.dart';
 import 'package:ams/res/custom_colors.dart';
 import 'package:ams/screens/workflow/transfer/transfer_asset_details.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class TransferScanScreen extends StatefulWidget {
-  TransferScanScreen({Key? key}) : super(key: key);
+  late String username, password;
+
+  TransferScanScreen({Key? key, required this.username, required this.password})
+      : super(key: key);
 
   @override
   _TransferScanScreenState createState() => _TransferScanScreenState();
@@ -18,14 +25,14 @@ class _TransferScanScreenState extends State<TransferScanScreen> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  String scanVin = "";
-  String? groupCode, dealerCode, dealerName, vin;
+  String scannedCode = "";
   bool isLoading = false,
       statusButtonVisible = false,
       submitButtonVisible = false;
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -42,16 +49,19 @@ class _TransferScanScreenState extends State<TransferScanScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
+                  SizedBox(
+                    height: 10,
+                  ),
                   if (result != null)
                     Text(
-                        'Vin: ${result!.code!.contains("#") ? result!.code!.substring(result!.code!.indexOf("#") + 1, result!.code!.indexOf("#") + 18) : result!.code}')
+                        '${result!.code!.contains("#") ? result!.code!.substring(result!.code!.indexOf("#") + 1, result!.code!.indexOf("#") + 18) : result!.code}')
                   else
                     const Text('Scan a code'),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Container(
+                      /* Container(
                           margin: const EdgeInsets.all(8),
                           child: SizedBox(
                             width: 120, // <-- Your width
@@ -74,7 +84,7 @@ class _TransferScanScreenState extends State<TransferScanScreen> {
                               child: const Text('Check Status',
                                   style: TextStyle(fontSize: 12)),
                             ),
-                          )),
+                          )),*/
                       Container(
                           margin: const EdgeInsets.all(8),
                           child: SizedBox(
@@ -84,20 +94,16 @@ class _TransferScanScreenState extends State<TransferScanScreen> {
                                 primary: !submitButtonVisible
                                     ? Colors.grey
                                     : kPrimaryColor,
-                                onPrimary: Colors.white,
+                                //onPrimary: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(29.0),
                                 ),
                               ),
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return TransferAssetDetailsScreen();
-                                    },
-                                  ),
-                                );
+                                !submitButtonVisible
+                                    ? null
+                                    : updateStatus(widget.username,
+                                        widget.password, scannedCode);
                               },
                               /* onPressed: !submitButtonVisible
                                 ? null
@@ -147,16 +153,18 @@ class _TransferScanScreenState extends State<TransferScanScreen> {
       setState(() {
         result = scanData;
         if (result != null) {
-          scanVin = (result!.code!.contains("#")
+          scannedCode = (result!.code!.contains("#")
               ? result!.code!.substring(result!.code!.indexOf("#") + 1,
                   result!.code!.indexOf("#") + 18)
               : result!.code)!;
-          if (scanVin == vin) {
-            statusButtonVisible = true;
+          if (scannedCode != null) {
+            setState(() {
+              submitButtonVisible = true;
+            });
           } else {
+            //statusButtonVisible = false;
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text('Vin not matching with selected row!!!')),
+              const SnackBar(content: Text('Code not valid!!!')),
             );
           }
         }
@@ -168,7 +176,7 @@ class _TransferScanScreenState extends State<TransferScanScreen> {
     log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
     if (!p) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('no Permission')),
+        const SnackBar(content: Text('Camera Permission Denied')),
       );
     }
   }
@@ -177,5 +185,95 @@ class _TransferScanScreenState extends State<TransferScanScreen> {
   void dispose() {
     controller?.dispose();
     super.dispose();
+  }
+
+  void updateStatus(String username, String password, String qrcode) async {
+    try {
+      String basicAuth =
+          "Basic " + base64Encode(utf8.encode("$username:$password"));
+
+      var headers = {"Authorization": basicAuth};
+      var queryParams = {"QRCode": qrcode};
+
+      var response = await http.get(
+          Uri.parse(assetDetails).replace(queryParameters: queryParams),
+          headers: headers);
+
+      print(response.body);
+
+      setState(() {
+        isLoading = false;
+      });
+
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        var asset = AssetDetails.fromJson(json);
+        print(response.body);
+
+        if (asset.responseStatus == "Success") {
+          print(asset.responseStatus);
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text("ok!")));
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return TransferAssetDetailsScreen(
+                  asset: asset.data!,
+                  username: widget.username,
+                  password: widget.password,
+                );
+              },
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Something went wrong, please try again !")));
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Something went wrong, please try again !")));
+      }
+    } catch (e) {
+      print(e);
+      print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Failed to update, please try again !")));
+    }
+  }
+
+  showAlertDialog(BuildContext context, String title) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {},
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(
+        title,
+        textAlign: TextAlign.center,
+      ),
+      content: Icon(
+        Icons.done_all,
+        color: Colors.green,
+        size: 60,
+      ),
+      /*actions: [
+        okButton,
+      ],*/
+    );
+
+    // show the dialog
+    showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }

@@ -9,7 +9,10 @@ import 'package:ams/screens/workflow/transfer/transfer_scan_screen.dart';
 import 'package:flutter/material.dart';
 
 class WorkflowScreen extends StatefulWidget {
-  WorkflowScreen({Key? key}) : super(key: key);
+  late String username, password;
+
+  WorkflowScreen({Key? key, required this.username, required this.password})
+      : super(key: key);
 
   @override
   _WorkflowScreenState createState() => _WorkflowScreenState();
@@ -37,7 +40,10 @@ class _WorkflowScreenState extends State<WorkflowScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return TransferScanScreen();
+                        return TransferScanScreen(
+                          username: widget.username,
+                          password: widget.password,
+                        );
                       },
                     ),
                   );

@@ -82,7 +82,10 @@ class _MainScreenState extends State<MainScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) {
-                    return WorkflowScreen();
+                    return WorkflowScreen(
+                      username: widget.username,
+                      password: widget.password,
+                    );
                   },
                 ),
               );

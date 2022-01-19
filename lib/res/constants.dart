@@ -1,7 +1,18 @@
 const String url =
-    "http://a0a8-2409-4053-218e-defd-1547-7fe4-bfa8-e95c.ngrok.io";
+    "http://f8ed-2409-4053-2003-8496-addc-a205-a9b7-c70d.ngrok.io";
 const String apiUrl = "$url/api";
 const String validateUser = "$apiUrl/UserAccount";
+
+//Audit Tab Apis
 const String auditList = "$apiUrl/auditlist";
 const String auditAssetList = "$apiUrl/auditassetlist";
 const String updateScannedAuditAsset = "$apiUrl/updateauditscanasset";
+
+//Asset Details Api
+const String assetDetails = "$apiUrl/scannedauditasset";
+
+//Location  ,SubLoaction Api
+const String location = "$apiUrl/location";
+const String subLocation = "$apiUrl/sublocation";
+
+//Transfer Tab Apis

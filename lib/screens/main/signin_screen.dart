@@ -207,31 +207,31 @@ class _SignInScreenState extends State<SignInScreen> {
       });
 
       print(response.body);
-       if (response.statusCode == 200) {
-      var json = jsonDecode(response.body);
-      print(response.body);
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        print(response.body);
 
-      if (json["ResponseStatus"] == "SUCCESS") {
-        Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return MainScreen(
-                username: username,
-                password: password,
-              );
-            },
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Invalid credentials !!")));
+        if (json["ResponseStatus"] == "Success") {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return MainScreen(
+                  username: username,
+                  password: password,
+                );
+              },
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Invalid credentials !!")));
+        }
+
+        //  groupCode: json['group_code'],
+
       }
-
-      //  groupCode: json['group_code'],
-
-         }
       /*  else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Something went wrong !!")));

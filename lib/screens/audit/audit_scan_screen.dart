@@ -24,7 +24,6 @@ class _AuditScanScreenState extends State<AuditScanScreen> {
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   String scannedCode = "";
-  String? groupCode, dealerCode, dealerName, vin;
   bool isLoading = false,
       statusButtonVisible = false,
       submitButtonVisible = false;

@@ -1,11 +1,17 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace, unused_local_variable, unused_field
 
+import 'package:ams/models/asset_details_model.dart';
 import 'package:ams/res/custom_colors.dart';
 import 'package:ams/screens/workflow/transfer/transfer_screen.dart';
 import 'package:flutter/material.dart';
 
 class TransferAssetDetailsScreen extends StatefulWidget {
-  TransferAssetDetailsScreen({Key? key}) : super(key: key);
+  late Data asset;
+  String? username, password;
+
+  TransferAssetDetailsScreen(
+      {Key? key, required this.asset, this.username, this.password})
+      : super(key: key);
 
   @override
   _TransferAssetDetailsScreenState createState() =>
@@ -42,7 +48,7 @@ class _TransferAssetDetailsScreenState
                   Container(
                     width: size.width * 0.4,
                     child: Text(
-                      "Name Of Asset Here",
+                      widget.asset.assetName.toString(),
                       style: TextStyle(
                         fontSize: 17,
                       ),
@@ -65,7 +71,7 @@ class _TransferAssetDetailsScreenState
                   Container(
                     width: size.width * 0.4,
                     child: Text(
-                      "Name Of Current User Here",
+                      widget.asset.assignedName.toString(),
                       style: TextStyle(
                         fontSize: 17,
                       ),
@@ -88,7 +94,7 @@ class _TransferAssetDetailsScreenState
                   Container(
                     width: size.width * 0.4,
                     child: Text(
-                      "Name Of Current Location Here",
+                      widget.asset.subLocationName.toString(),
                       style: TextStyle(
                         fontSize: 17,
                       ),
@@ -111,7 +117,7 @@ class _TransferAssetDetailsScreenState
                   Container(
                     width: size.width * 0.4,
                     child: Text(
-                      "Name Of Current Sub-Location Here",
+                      widget.asset.subLocationName.toString(),
                       style: TextStyle(
                         fontSize: 17,
                       ),
@@ -122,12 +128,15 @@ class _TransferAssetDetailsScreenState
               SizedBox(height: 50),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  // Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return TransferScreen();
+                        return TransferScreen(
+                          username: widget.username!,
+                          password: widget.password!,
+                        );
                       },
                     ),
                   );
