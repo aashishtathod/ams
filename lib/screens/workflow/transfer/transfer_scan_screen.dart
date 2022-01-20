@@ -212,8 +212,8 @@ class _TransferScanScreenState extends State<TransferScanScreen> {
 
         if (asset.responseStatus == "Success") {
           print(asset.responseStatus);
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("ok!")));
+
+          Navigator.pop(context);
 
           Navigator.push(
             context,

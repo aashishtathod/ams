@@ -128,7 +128,7 @@ class _TransferAssetDetailsScreenState
               SizedBox(height: 50),
               ElevatedButton(
                 onPressed: () {
-                  // Navigator.pop(context);
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -136,6 +136,9 @@ class _TransferAssetDetailsScreenState
                         return TransferScreen(
                           username: widget.username!,
                           password: widget.password!,
+                          fromLocationId: widget.asset.locationId.toString(),
+                          fromSubLocationId:
+                              widget.asset.subLocationId.toString(),
                         );
                       },
                     ),

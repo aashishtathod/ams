@@ -5,15 +5,21 @@ import 'dart:developer';
 
 import 'package:ams/models/locations_model.dart';
 import 'package:ams/models/sublocation_model.dart';
+import 'package:ams/models/userinfo_model.dart';
 import 'package:ams/res/constants.dart';
 import 'package:ams/res/custom_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class TransferScreen extends StatefulWidget {
-  late String username, password;
+  late String username, password, fromLocationId, fromSubLocationId;
 
-  TransferScreen({Key? key, required this.username, required this.password})
+  TransferScreen(
+      {Key? key,
+      required this.username,
+      required this.password,
+      required this.fromLocationId,
+      required this.fromSubLocationId})
       : super(key: key);
 
   @override
@@ -23,6 +29,11 @@ class TransferScreen extends StatefulWidget {
 class _TransferScreenState extends State<TransferScreen> {
   LocationData? locationValue;
   SublocationData? subLocationValue;
+  UserInfoData? userInfoValue;
+
+  List<LocationData>? locations = [];
+  List<SublocationData>? subLocations = [];
+  List<UserInfoData>? userInfos = [];
 
   @override
   void initState() {
@@ -106,14 +117,52 @@ class _TransferScreenState extends State<TransferScreen> {
     }
   }
 
-  List<LocationData>? locations = [];
-  List<SublocationData>? subLocations = [];
+  Future fetchUserInfo(int locationId, int subLocationId) async {
+    String username = widget.username; //widget.username;
+    String password = widget.password; // widget.password;
+    try {
+      log(locationId.toString());
+
+      String basicAuth =
+          "Basic " + base64Encode(utf8.encode("$username:$password"));
+
+      var header = {"Authorization": basicAuth};
+      var params = {
+        "LocationID": locationId.toString(),
+        "SubLocationID": subLocationId.toString()
+      };
+      var response = await http.get(
+          Uri.parse(userInfo).replace(queryParameters: params),
+          headers: header);
+
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        var data = UserInfo.fromJson(json);
+
+        if (data.responseStatus == "Success") {
+          setState(() {
+            if (data.data != null) {
+              userInfos = data.data;
+            }
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text(" Something went wrong, please try again !")));
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(" Something went wrong, please try again !")));
+      }
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Something went wrong, please try again !")));
+    }
+  }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String? user, address, subAddress, remarks;
-  final TextEditingController _userController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _subAddressController = TextEditingController();
+  String? remarks;
+  bool isloading = false;
   final TextEditingController _remarksControler = TextEditingController();
 
   @override
@@ -167,6 +216,8 @@ class _TransferScreenState extends State<TransferScreen> {
                     setState(() {
                       subLocations = [];
                       subLocationValue = null;
+                      userInfoValue = null;
+                      userInfos = [];
                       fetchSubLocations(locationValue!.locationId);
                     });
                   }
@@ -201,6 +252,10 @@ class _TransferScreenState extends State<TransferScreen> {
               onChanged: (newValue) {
                 setState(() {
                   subLocationValue = newValue;
+                  userInfoValue = null;
+                  userInfos = [];
+                  fetchUserInfo(locationValue!.locationId,
+                      subLocationValue!.subLocationId);
                 });
               },
             ),
@@ -211,7 +266,7 @@ class _TransferScreenState extends State<TransferScreen> {
             decoration: BoxDecoration(
                 color: kPrimaryLightColor,
                 borderRadius: BorderRadius.circular(30)),
-            child: DropdownButtonFormField<SublocationData>(
+            child: DropdownButtonFormField<UserInfoData>(
               onTap: () {
                 if (subLocations == [] && locationValue!.locationId != null) {
                   fetchSubLocations(locationValue!.locationId);
@@ -220,18 +275,18 @@ class _TransferScreenState extends State<TransferScreen> {
               icon: const Icon(Icons.keyboard_arrow_down),
               decoration: InputDecoration(enabledBorder: InputBorder.none),
               isExpanded: true,
-              hint: Text("Sub-Location"),
-              value: subLocationValue,
-              items: subLocations?.map((SublocationData item) {
+              hint: Text("User"),
+              value: userInfoValue,
+              items: userInfos?.map((UserInfoData item) {
                     return DropdownMenuItem(
                       value: item,
-                      child: Text(item.subLocationName.toString()),
+                      child: Text(item.userName.toString()),
                     );
                   })?.toList() ??
                   [],
               onChanged: (newValue) {
                 setState(() {
-                  subLocationValue = newValue;
+                  userInfoValue = newValue;
                 });
               },
             ),
@@ -273,7 +328,7 @@ class _TransferScreenState extends State<TransferScreen> {
                 }
                 return null;
               },
-              keyboardType: TextInputType.emailAddress,
+              keyboardType: TextInputType.text,
               onSaved: (val) {
                 remarks = val;
               },
@@ -281,7 +336,17 @@ class _TransferScreenState extends State<TransferScreen> {
           ),
           SizedBox(height: 40),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              /* if (locationValue != null &&
+                      subLocationValue != null &&
+                      userInfoValue != null &&
+                  !isloading
+                  ) {*/
+              isloading = !isloading;
+
+              transfer();
+              //   }
+            },
             child: Text("          Transfer          "),
             style: ElevatedButton.styleFrom(
                 primary: kPrimaryColor,
@@ -291,6 +356,85 @@ class _TransferScreenState extends State<TransferScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  transfer() async {
+    var date = DateUtils.dateOnly(DateTime.now().toLocal())
+        .toString()
+        .substring(0, 11);
+
+    log(date.toString());
+
+    String username = widget.username; //widget.username;
+    String password = widget.password; // widget.password;
+    try {
+      String basicAuth =
+          "Basic " + base64Encode(utf8.encode("$username:$password"));
+
+      var header = {"Authorization": basicAuth};
+      var body = {
+        "FromLocationID": widget.fromLocationId,
+        "FromSubLocationID": widget.fromSubLocationId,
+        "TransferDate": date,
+        "TRUserID": userInfoValue!.userId.toString(),
+        "TRRemarks": _remarksControler.text,
+        "ToLocationID": locationValue!.locationId.toString(),
+        "ToSubLocationID": subLocationValue!.subLocationId.toString()
+      };
+      var response =
+          await http.post(Uri.parse(transferApi), headers: header, body: body);
+
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        if (json["Response"] == "Success") {
+          showAlertDialog(
+              context, "Success", "Transfer Request Successfully raised.");
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(json["ResponseMessage"].toString())));
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Something went wrong, please try again !")));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(" Something went wrong, please try again !")));
+    }
+  }
+
+  showAlertDialog(BuildContext context, String title, String message) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(
+        title,
+        textAlign: TextAlign.center,
+      ),
+      content: Text(
+        message,
+      ),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }
