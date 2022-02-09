@@ -16,19 +16,19 @@ class AssetDetails {
   String? responseStatus;
   String? responseMessage;
   int? totalItems;
-  Data? data;
+  AssetData? data;
 
   factory AssetDetails.fromJson(Map<String, dynamic> json) => AssetDetails(
         responseCode: json["ResponseCode"],
         responseStatus: json["ResponseStatus"],
         responseMessage: json["ResponseMessage"],
         totalItems: json["TotalItems"],
-        data: Data.fromJson(json["Data"]),
+        data: AssetData.fromJson(json["Data"]),
       );
 }
 
-class Data {
-  Data({
+class AssetData {
+  AssetData({
     this.assetId,
     this.financialYearId,
     this.financialYear,
@@ -182,7 +182,7 @@ class Data {
   DateTime? updateDate;
   dynamic updateRemarks;
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory AssetData.fromJson(Map<String, dynamic> json) => AssetData(
         assetId: json["AssetID"],
         financialYearId: json["FinancialYearID"],
         financialYear: json["FinancialYear"],

@@ -10,9 +10,13 @@ import 'package:http/http.dart' as http;
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class AuditScanScreen extends StatefulWidget {
-  late String username, password;
+  late String username, password, auditID;
 
-  AuditScanScreen({Key? key, required this.username, required this.password})
+  AuditScanScreen(
+      {Key? key,
+      required this.username,
+      required this.password,
+      required this.auditID})
       : super(key: key);
 
   @override
@@ -36,7 +40,7 @@ class _AuditScanScreenState extends State<AuditScanScreen> {
           elevation: 0,
           backgroundColor: kPrimaryColor,
           leading: const BackButton(),
-          title: Text("Audit 1"),
+          title: Text("Audit ${widget.auditID}"),
         ),
         body: Column(children: <Widget>[
           Expanded(flex: 4, child: _buildQrView(context)),
@@ -191,7 +195,7 @@ class _AuditScanScreenState extends State<AuditScanScreen> {
           "Basic " + base64Encode(utf8.encode("$username:$password"));
 
       var headers = {"Authorization": basicAuth};
-      var body = {"QRCode": qrcode};
+      var body = {"QRCode": qrcode, "AuditID": widget.auditID};
 
       var response = await http.post(Uri.parse(updateScannedAuditAsset),
           body: body, headers: headers);
@@ -204,7 +208,7 @@ class _AuditScanScreenState extends State<AuditScanScreen> {
         var json = jsonDecode(response.body);
         print(response.body);
 
-        if (json["ResponseStatus"] == "SUCCESS") {
+        if (json["Response"] == "Success") {
           print(response.body);
           showAlertDialog(context, "Success");
 

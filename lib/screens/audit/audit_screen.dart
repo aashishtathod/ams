@@ -31,6 +31,8 @@ class _AuditScreenState extends State<AuditScreen> {
     super.initState();
   }
 
+  var list;
+
   Future<List<AuditData>> _fetchAudits(String username, String password) async {
     return _memoizer.runOnce(() async {
       //await Future.delayed(const Duration(seconds: 1));
@@ -57,6 +59,9 @@ class _AuditScreenState extends State<AuditScreen> {
         var audits = Audit.fromJson(json);
 
         if (audits.responseStatus == "Success") {
+          setState(() {
+            list = audits.data;
+          });
           return audits.data;
         } else {
           log('Failed to load Data from CDR API');
@@ -83,8 +88,11 @@ class _AuditScreenState extends State<AuditScreen> {
         body: FutureBuilder<List<AuditData>>(
             future: _fetchAudits(widget.username, widget.password),
             builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data?.length != 0) {
+              if (snapshot.hasData &&
+                  snapshot.data?.length != 0 &&
+                  list != null) {
                 return ListView.builder(
+                    physics: ClampingScrollPhysics(),
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       return Padding(
@@ -104,7 +112,7 @@ class _AuditScreenState extends State<AuditScreen> {
                                     child: Center(
                                       child: Container(
                                         //height: size.height * 0.1,
-                                        width: size.width * 0.85,
+                                        width: size.width * 0.9,
                                         child: Card(
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
@@ -118,150 +126,157 @@ class _AuditScreenState extends State<AuditScreen> {
                                                   const EdgeInsets.symmetric(
                                                       vertical: 10,
                                                       horizontal: 15),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceAround,
+                                              child: Column(
                                                 children: [
-                                                  Column(
-                                                    children: [
-                                                      Text(
-                                                          "Audit " +
-                                                              snapshot
-                                                                  .data![index]
-                                                                  .auditId
-                                                                  .toString(),
-                                                          style: TextStyle(
-                                                            fontSize: 20.0,
-                                                            fontFamily:
-                                                                'Roboto',
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color:
-                                                                kPrimaryColor,
-                                                          )),
-                                                      SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                      Text(
-                                                          snapshot.data![index]
-                                                              .auditStatus
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                            fontSize: 16.0,
-                                                            fontFamily:
-                                                                'Roboto',
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color: Colors
-                                                                .grey[700],
-                                                          )),
-                                                      SizedBox(
-                                                        height: 2,
-                                                      ),
-                                                      Text(
-                                                          snapshot.data![index]
-                                                              .auditStartDate
-                                                              .toString()
-                                                              .trim()
-                                                              .substring(0, 11),
-                                                          style: TextStyle(
-                                                            fontSize: 17.0,
-                                                            fontFamily:
-                                                                'Roboto',
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color:
-                                                                Colors.black87,
-                                                          )),
-                                                      SizedBox(
-                                                        height: 2,
-                                                      ),
-                                                      Text(
-                                                          snapshot.data![index]
-                                                              .auditEndDate
-                                                              .toString()
-                                                              .trim()
-                                                              .substring(0, 11),
-                                                          style: TextStyle(
-                                                            fontSize: 17.0,
-                                                            fontFamily:
-                                                                'Roboto',
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color:
-                                                                Colors.black87,
-                                                          )),
-                                                    ],
+                                                  SingleChildScrollView(
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    child: Text(
+                                                        snapshot.data![index]
+                                                            .auditCode
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                          fontSize: 20.0,
+                                                          fontFamily: 'Roboto',
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: kPrimaryColor,
+                                                        )),
                                                   ),
-                                                  Column(
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceAround,
                                                     children: [
                                                       Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceAround,
                                                         children: [
-                                                          ElevatedButton(
-                                                            onPressed: () {
-                                                              Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) {
-                                                                    return AuditAssetScreen(
-                                                                      auditId: snapshot
-                                                                          .data![
-                                                                              index]
-                                                                          .auditId,
-                                                                      username:
-                                                                          widget
-                                                                              .username,
-                                                                      password:
-                                                                          widget
-                                                                              .password,
-                                                                    );
-                                                                  },
+                                                          Text(
+                                                              snapshot
+                                                                  .data![index]
+                                                                  .auditStatus
+                                                                  .toString(),
+                                                              style: TextStyle(
+                                                                fontSize: 16.0,
+                                                                fontFamily:
+                                                                    'Roboto',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: Colors
+                                                                    .grey[700],
+                                                              )),
+                                                          SizedBox(
+                                                            height: 2,
+                                                          ),
+                                                          Text(
+                                                              snapshot
+                                                                  .data![index]
+                                                                  .auditStartDate
+                                                                  .toString()
+                                                                  .trim()
+                                                                  .substring(
+                                                                      0, 11),
+                                                              style: TextStyle(
+                                                                fontSize: 17.0,
+                                                                fontFamily:
+                                                                    'Roboto',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: Colors
+                                                                    .black87,
+                                                              )),
+                                                          SizedBox(
+                                                            height: 2,
+                                                          ),
+                                                          Text(
+                                                              snapshot
+                                                                  .data![index]
+                                                                  .auditEndDate
+                                                                  .toString()
+                                                                  .trim()
+                                                                  .substring(
+                                                                      0, 11),
+                                                              style: TextStyle(
+                                                                fontSize: 17.0,
+                                                                fontFamily:
+                                                                    'Roboto',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: Colors
+                                                                    .black87,
+                                                              )),
+                                                        ],
+                                                      ),
+                                                      Column(
+                                                        children: [
+                                                          Column(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceAround,
+                                                            children: [
+                                                              ElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator
+                                                                      .push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder:
+                                                                          (context) {
+                                                                        return AuditAssetScreen(
+                                                                          auditId: snapshot
+                                                                              .data![index]
+                                                                              .auditId,
+                                                                          username:
+                                                                              widget.username,
+                                                                          password:
+                                                                              widget.password,
+                                                                        );
+                                                                      },
+                                                                    ),
+                                                                  );
+                                                                },
+                                                                style: ElevatedButton
+                                                                    .styleFrom(
+                                                                  primary:
+                                                                      kPrimaryColor,
+                                                                  shape:
+                                                                      RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            29.0),
+                                                                  ),
                                                                 ),
-                                                              );
-                                                            },
-                                                            style:
-                                                                ElevatedButton
-                                                                    .styleFrom(
-                                                              primary:
-                                                                  kPrimaryColor,
-                                                              shape:
-                                                                  RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            29.0),
+                                                                child: Text(
+                                                                    " Start "),
                                                               ),
-                                                            ),
-                                                            child:
-                                                                Text(" Start "),
-                                                          ),
-                                                          ElevatedButton(
-                                                            onPressed: () {},
-                                                            style:
-                                                                ElevatedButton
+                                                              ElevatedButton(
+                                                                onPressed:
+                                                                    () {},
+                                                                style: ElevatedButton
                                                                     .styleFrom(
-                                                              primary:
-                                                                  kPrimaryColor,
-                                                              shape:
-                                                                  RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
+                                                                  primary:
+                                                                      kPrimaryColor,
+                                                                  shape:
+                                                                      RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
                                                                             29.0),
+                                                                  ),
+                                                                ),
+                                                                child: Text(
+                                                                    "Report"),
                                                               ),
-                                                            ),
-                                                            child:
-                                                                Text("Report"),
-                                                          ),
+                                                            ],
+                                                          )
                                                         ],
                                                       )
                                                     ],
-                                                  )
+                                                  ),
                                                 ],
                                               )),
                                         ),

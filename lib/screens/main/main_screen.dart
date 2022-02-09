@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace
 
 import 'package:ams/res/custom_colors.dart';
+import 'package:ams/screens/asset_master/asset_master_screen.dart';
 import 'package:ams/screens/audit/audit_screen.dart';
 import 'package:ams/screens/data_updates/data_updates.dart';
 import 'package:ams/screens/workflow/workflow_screen.dart';
@@ -32,6 +33,50 @@ class _MainScreenState extends State<MainScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return AssetMasterScreen(
+                      username: widget.username,
+                      password: widget.password,
+                    );
+                  },
+                ),
+              );
+            },
+            child: Center(
+              child: Container(
+                height: size.height * 0.1,
+                width: size.width * 0.85,
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  shadowColor: Colors.blueAccent,
+                  elevation: 10,
+                  // color: kPrimaryLightColor,
+                  child: ClipPath(
+                      clipper: ShapeBorderClipper(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15))),
+                      child: Center(
+                        child: const Text('Asset Master',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontFamily: 'Roboto',
+                              color: kPrimaryColor,
+                            )),
+                      )),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: size.height * 0.02,
+          ),
           InkWell(
             onTap: () {
               Navigator.push(

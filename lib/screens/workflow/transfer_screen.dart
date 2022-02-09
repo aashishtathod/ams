@@ -12,13 +12,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class TransferScreen extends StatefulWidget {
-  late String username, password, fromLocationId, fromSubLocationId;
+  late String username, password, fromLocationId, fromSubLocationId, qrcode;
 
   TransferScreen(
       {Key? key,
       required this.username,
       required this.password,
       required this.fromLocationId,
+      required this.qrcode,
       required this.fromSubLocationId})
       : super(key: key);
 
@@ -160,7 +161,7 @@ class _TransferScreenState extends State<TransferScreen> {
     }
   }
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  // final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? remarks;
   bool isloading = false;
   final TextEditingController _remarksControler = TextEditingController();
@@ -185,7 +186,7 @@ class _TransferScreenState extends State<TransferScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             decoration: BoxDecoration(
                 color: kPrimaryLightColor,
-                borderRadius: BorderRadius.circular(30)),
+                borderRadius: BorderRadius.circular(90)),
             child: DropdownButtonFormField<LocationData>(
               onTap: () {
                 if (locations == []) {
@@ -197,7 +198,14 @@ class _TransferScreenState extends State<TransferScreen> {
                 }
               },
               icon: const Icon(Icons.keyboard_arrow_down),
-              decoration: InputDecoration(enabledBorder: InputBorder.none),
+              decoration: InputDecoration(
+                enabledBorder: InputBorder.none,
+                labelText: "Location",
+                labelStyle: TextStyle(
+                    color: Colors.black54,
+                    fontStyle: FontStyle.italic,
+                    decoration: TextDecoration.none),
+              ),
               isExpanded: true,
               hint: Text("Location"),
               value: locationValue,
@@ -230,7 +238,7 @@ class _TransferScreenState extends State<TransferScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             decoration: BoxDecoration(
                 color: kPrimaryLightColor,
-                borderRadius: BorderRadius.circular(30)),
+                borderRadius: BorderRadius.circular(90)),
             child: DropdownButtonFormField<SublocationData>(
               onTap: () {
                 if (subLocations == [] && locationValue!.locationId != null) {
@@ -238,7 +246,14 @@ class _TransferScreenState extends State<TransferScreen> {
                 }
               },
               icon: const Icon(Icons.keyboard_arrow_down),
-              decoration: InputDecoration(enabledBorder: InputBorder.none),
+              decoration: InputDecoration(
+                enabledBorder: InputBorder.none,
+                labelText: "Sub-Location",
+                labelStyle: TextStyle(
+                    color: Colors.black54,
+                    fontStyle: FontStyle.italic,
+                    decoration: TextDecoration.none),
+              ),
               isExpanded: true,
               hint: Text("Sub-Location"),
               value: subLocationValue,
@@ -265,7 +280,7 @@ class _TransferScreenState extends State<TransferScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             decoration: BoxDecoration(
                 color: kPrimaryLightColor,
-                borderRadius: BorderRadius.circular(30)),
+                borderRadius: BorderRadius.circular(90)),
             child: DropdownButtonFormField<UserInfoData>(
               onTap: () {
                 if (subLocations == [] && locationValue!.locationId != null) {
@@ -273,9 +288,16 @@ class _TransferScreenState extends State<TransferScreen> {
                 }
               },
               icon: const Icon(Icons.keyboard_arrow_down),
-              decoration: InputDecoration(enabledBorder: InputBorder.none),
+              decoration: InputDecoration(
+                enabledBorder: InputBorder.none,
+                labelText: "To User",
+                labelStyle: TextStyle(
+                    color: Colors.black54,
+                    fontStyle: FontStyle.italic,
+                    decoration: TextDecoration.none),
+              ),
               isExpanded: true,
-              hint: Text("User"),
+              hint: Text("To User"),
               value: userInfoValue,
               items: userInfos?.map((UserInfoData item) {
                     return DropdownMenuItem(
@@ -300,6 +322,11 @@ class _TransferScreenState extends State<TransferScreen> {
                   Icons.details,
                   color: kPrimaryColor,
                 ),
+                labelText: "Remarks",
+                labelStyle: TextStyle(
+                    color: Colors.black54,
+                    fontStyle: FontStyle.italic,
+                    decoration: TextDecoration.none),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(90.0)),
                   borderSide: BorderSide.none,
@@ -324,7 +351,7 @@ class _TransferScreenState extends State<TransferScreen> {
               textInputAction: TextInputAction.done,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter username';
+                  return 'Please enter Remarks';
                 }
                 return null;
               },
@@ -337,15 +364,14 @@ class _TransferScreenState extends State<TransferScreen> {
           SizedBox(height: 40),
           ElevatedButton(
             onPressed: () {
-              /* if (locationValue != null &&
-                      subLocationValue != null &&
-                      userInfoValue != null &&
-                  !isloading
-                  ) {*/
-              isloading = !isloading;
+              if (locationValue != null &&
+                  subLocationValue != null &&
+                  userInfoValue != null &&
+                  !isloading) {
+                isloading = !isloading;
 
-              transfer();
-              //   }
+                transfer();
+              }
             },
             child: Text("          Transfer          "),
             style: ElevatedButton.styleFrom(
@@ -376,14 +402,21 @@ class _TransferScreenState extends State<TransferScreen> {
       var body = {
         "FromLocationID": widget.fromLocationId,
         "FromSubLocationID": widget.fromSubLocationId,
+        "AssetCode": widget.qrcode,
+        "RequestDate": date,
         "TransferDate": date,
         "TRUserID": userInfoValue!.userId.toString(),
+        "TRStatus": "PENDING",
         "TRRemarks": _remarksControler.text,
         "ToLocationID": locationValue!.locationId.toString(),
         "ToSubLocationID": subLocationValue!.subLocationId.toString()
       };
       var response =
           await http.post(Uri.parse(transferApi), headers: header, body: body);
+
+      setState(() {
+        isloading = !isloading;
+      });
 
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
@@ -430,7 +463,7 @@ class _TransferScreenState extends State<TransferScreen> {
 
     // show the dialog
     showDialog(
-      barrierDismissible: true,
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return alert;

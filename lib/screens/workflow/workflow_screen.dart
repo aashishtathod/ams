@@ -1,11 +1,8 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace
 
 import 'package:ams/res/custom_colors.dart';
-import 'package:ams/screens/workflow/asset_maintain_records/asset_manitain_scan_screen.dart';
-import 'package:ams/screens/workflow/discard/discard_scan_screen.dart';
-import 'package:ams/screens/workflow/raise_ticket/ticket_scan_screen.dart';
-import 'package:ams/screens/workflow/sale/sale_scan_screen.dart';
-import 'package:ams/screens/workflow/transfer/transfer_scan_screen.dart';
+import 'package:ams/res/tags.dart';
+import 'package:ams/screens/workflow/scan_screen.dart';
 import 'package:flutter/material.dart';
 
 class WorkflowScreen extends StatefulWidget {
@@ -40,9 +37,10 @@ class _WorkflowScreenState extends State<WorkflowScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return TransferScanScreen(
+                        return ScanScreen(
                           username: widget.username,
                           password: widget.password,
+                          screen: TRANSFER_TAG,
                         );
                       },
                     ),
@@ -84,7 +82,11 @@ class _WorkflowScreenState extends State<WorkflowScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return SaleScanScreen();
+                        return ScanScreen(
+                          username: widget.username,
+                          password: widget.password,
+                          screen: SALE_TAG,
+                        );
                       },
                     ),
                   );
@@ -125,7 +127,11 @@ class _WorkflowScreenState extends State<WorkflowScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return DiscardScanScreen();
+                        return ScanScreen(
+                          username: widget.username,
+                          password: widget.password,
+                          screen: DISCARD_TAG,
+                        );
                       },
                     ),
                   );
@@ -166,7 +172,11 @@ class _WorkflowScreenState extends State<WorkflowScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return TicketScanScreen();
+                        return ScanScreen(
+                          username: widget.username,
+                          password: widget.password,
+                          screen: TICKET_TAG,
+                        );
                       },
                     ),
                   );
@@ -207,7 +217,11 @@ class _WorkflowScreenState extends State<WorkflowScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return AssetMaintainScanScreen();
+                        return ScanScreen(
+                          username: widget.username,
+                          password: widget.password,
+                          screen: MAINTAINANCE_TAG,
+                        );
                       },
                     ),
                   );
